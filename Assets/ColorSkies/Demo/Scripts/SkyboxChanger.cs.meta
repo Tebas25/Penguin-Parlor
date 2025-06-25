@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 476cc7d7cd9874016adc216baab94a0a
-timeCreated: 1484146680
+guid: dca6002b33ac5bc48b39588e222296fb
+timeCreated: 1459805230
 licenseType: Store
 MonoImporter:
   serializedVersion: 2
@@ -12,8 +12,8 @@ MonoImporter:
   assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
-  productId: 191449
-  packageName: Simple Water Shader URP
-  packageVersion: 1.0.0
-  assetPath: Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs
-  uploadId: 422776
+  productId: 91541
+  packageName: ColorSkies
+  packageVersion: 1.0
+  assetPath: Assets/ColorSkies/Demo/Scripts/SkyboxChanger.cs
+  uploadId: 181983
