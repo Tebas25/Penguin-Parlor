@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3004749086503754056}
   - component: {fileID: 351386264999575000}
   - component: {fileID: 8203420470362015262}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: tabla
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,7 +166,7 @@ GameObject:
   - component: {fileID: 8838532968618665045}
   - component: {fileID: 4749019439505831845}
   - component: {fileID: 8036801826327748486}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: palo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -274,7 +274,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7654953341947819586}
   - component: {fileID: 1885475055492091567}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mesa
   m_TagString: Untagged
   m_Icon: {fileID: 0}
