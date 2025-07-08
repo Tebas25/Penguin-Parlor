@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 
@@ -13,6 +13,12 @@ public class PenguinNPCController : MonoBehaviour
     private bool isSitting = false;
     public float snapDistance = 1.5f;
 
+    [Header("Detección de mesas")]
+    private Vector3 mesaDestino;
+    private Transform mesaTransform;
+    public float distanciaAutoAsignacion = 2f;
+
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -22,15 +28,35 @@ public class PenguinNPCController : MonoBehaviour
 
     void Update()
     {
-        if (isSitting || targetSitPoint == null) return;
+        if (isSitting) return;
 
         float speed = agent.velocity.magnitude;
         animator.SetFloat("speed", speed);
 
-        float dist = Vector3.Distance(transform.position, targetSitPoint.position);
-        if (dist <= snapDistance)
+        // Si ya tenemos SitPoint asignado, hacer snap
+        if (targetSitPoint != null)
         {
-            StartCoroutine(SnapToSitPoint());
+            float dist = Vector3.Distance(transform.position, targetSitPoint.position);
+            if (dist <= snapDistance)
+            {
+                StartCoroutine(SnapToSitPoint());
+            }
+            return;
+        }
+
+        // Si estamos cerca de la mesa pero aún no tenemos SitPoint
+        if (mesaTransform != null && Vector3.Distance(transform.position, mesaDestino) <= distanciaAutoAsignacion)
+        {
+            AsignarSitPointCercano();
+        }
+
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.green;
+            if (targetSitPoint != null)
+                Gizmos.DrawLine(transform.position, targetSitPoint.position);
+            else if (mesaTransform != null)
+                Gizmos.DrawLine(transform.position, mesaDestino);
         }
     }
 
@@ -97,7 +123,7 @@ public class PenguinNPCController : MonoBehaviour
             return false;
         }
 
-        // Ahora s� marcamos ocupado
+        // Ahora sí marcamos ocupado
         sitPointMarker.MarcarOcupado(true);
 
         agent.isStopped = false;
@@ -106,4 +132,50 @@ public class PenguinNPCController : MonoBehaviour
 
         return true;
     }
+
+    // Movimiento a mesa
+    private void AsignarSitPointCercano()
+    {
+        var markers = mesaTransform.GetComponentsInChildren<SitPointMarker>();
+        Debug.Log($"{name}: Intentando asignar SitPoint entre {markers.Length} disponibles.");
+
+        foreach (var marker in markers)
+        {
+            Debug.Log($"{name}: Evaluando SitPoint '{marker.name}' → ocupado: {marker.EstaDisponible() == false}");
+
+            if (marker.EstaDisponible())
+            {
+                marker.MarcarOcupado(true);
+                targetSitPoint = marker.transform;
+                sitPointMarker = marker;
+
+                bool valid = agent.SetDestination(targetSitPoint.position);
+                Debug.Log($"{name}: Asignado a SitPoint '{marker.name}'. ¿Ruta válida? {valid}");
+
+                return;
+            }
+        }
+
+        Debug.LogWarning($"{name}: No se encontró SitPoint libre o accesible en '{mesaTransform.name}'.");
+    }
+
+
+    public void MoveToMesa(Vector3 destino, Transform mesa)
+    {
+        mesaDestino = destino;
+        mesaTransform = mesa;
+        targetSitPoint = null;
+        sitPointMarker = null;
+
+        bool pathOk = agent.SetDestination(destino);
+        agent.isStopped = false;
+        isSitting = false;
+        animator.SetBool("sitting", false);
+
+        Debug.Log($"{name}: Enviando a mesa '{mesa.name}', destino: {destino}, path válido: {pathOk}");
+
+        if (!pathOk)
+            Debug.LogWarning($"{name}: No se pudo calcular ruta hacia la mesa '{mesa.name}'.");
+    }
+
 }

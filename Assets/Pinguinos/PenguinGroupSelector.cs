@@ -35,18 +35,17 @@ public class PenguinGroupSelector : MonoBehaviour
             Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red, 2f);
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, mesaLayer))
             {
-                Debug.Log("Objeto clickeado: " + hit.collider.name);
+                Transform mesaDestino = hit.collider.transform.Find("MesaDestino");
 
-                SitPointMarker[] puntos = hit.collider.GetComponentsInChildren<SitPointMarker>();
-                int asignados = 0;
-
-                foreach (var punto in puntos)
+                if (mesaDestino == null)
                 {
-                    if (!punto.EstaDisponible()) continue;
-                    if (asignados >= selectedPenguins.Count) break;
+                    Debug.LogWarning("La mesa no tiene 'MesaDestino'.");
+                    return;
+                }
 
-                    bool ok = selectedPenguins[asignados].AsignarSitPoint(punto.transform);
-                    if (ok) asignados++;
+                foreach (var penguin in selectedPenguins)
+                {
+                    penguin.MoveToMesa(mesaDestino.position, hit.collider.transform);
                 }
 
                 DeselectAll();
