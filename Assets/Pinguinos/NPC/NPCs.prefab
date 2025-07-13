@@ -71,6 +71,7 @@ MonoBehaviour:
   selectorCircle: {fileID: 3239825083730200101}
   snapDistance: 10
   distanciaAutoAsignacion: 18
+  puntoSalida: {fileID: 7543949663385338587, guid: fdc59c9d15f5b1b48972ceee75a400a5, type: 3}
 --- !u!1 &4210782981970782743
 GameObject:
   m_ObjectHideFlags: 0
