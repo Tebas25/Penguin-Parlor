@@ -21,7 +21,17 @@ public class PenguinNPCController : MonoBehaviour
     private Transform mesaTransform;
     public float distanciaAutoAsignacion = 2f;
 
-    
+    [Header("Pedidos")]
+    public GameObject pedidoBubble;
+    public Sprite[] iconosHelado;
+    public enum SaborHelado { Fresa, Chocolate, Vainilla }
+    private SaborHelado saborDeseado;
+    private bool esperandoHelado = false;
+    private bool recibioOrden = false;
+    public bool EsperaOrden() => isSitting && !recibioOrden;
+
+
+
 
     void Start()
     {
@@ -95,50 +105,6 @@ public class PenguinNPCController : MonoBehaviour
             selectorCircle.SetActive(false);
 
         StartCoroutine(FlujoCliente());
-    }
-
-    IEnumerator FlujoCliente()
-    {
-        yield return new WaitForSeconds(Random.Range(1f, 3f));
-        Debug.Log($"{name} decidió el pedido.");
-
-        yield return new WaitForSeconds(5f);
-        Debug.Log($"{name} recibió el pedido.");
-
-        yield return new WaitForSeconds(4f);
-        Debug.Log($"{name} terminó de comer.");
-
-        // Limpia estado
-        animator.SetBool("sitting", false);
-        yield return new WaitForSeconds(1f);
-
-        if (sitPointMarker != null)
-            sitPointMarker.MarcarOcupado(false);
-
-        // Limpia referencias para que no se vuelva a asignar un pingüino a la misma mesa
-        mesaTransform = null;
-        mesaDestino = Vector3.zero;
-        targetSitPoint = null;
-        sitPointMarker = null;
-        isSitting = false;
-        snapDistance = -1f;
-
-        if (puntoSalida != null)
-        {
-            agent.SetDestination(puntoSalida.position);
-            agent.isStopped = false;
-            Debug.Log($"{name} caminando a salida '{puntoSalida.name}'");
-        }
-        else
-        {
-            Debug.LogWarning($"{name}: puntoSalida no asignado.");
-        }
-
-        // Espera hasta llegar para borrar
-        while (puntoSalida != null && Vector3.Distance(transform.position, puntoSalida.position) > 1f)
-            yield return null;
-
-        Destroy(gameObject);
     }
 
     public void SetSelected(bool selected)
@@ -228,4 +194,91 @@ public class PenguinNPCController : MonoBehaviour
         if (!pathOk)
             Debug.LogWarning($"{name}: No se pudo calcular ruta hacia la mesa '{mesa.name}'.");
     }
+
+    // SECCIÓN FLUJO CLIENTE
+    IEnumerator FlujoCliente()
+    {
+        yield return new WaitForSeconds(Random.Range(1f, 3f));
+
+        if (pedidoBubble != null)
+        {
+            pedidoBubble.SetActive(true);
+            var icono = pedidoBubble.GetComponentInChildren<UnityEngine.UI.Image>();
+            if (icono != null && iconosHelado.Length > 0)
+            {
+                int index = Random.Range(0, iconosHelado.Length);
+                //saborDeseado = ObtenerSaborPorIndex(index);
+                saborDeseado = (SaborHelado)index;
+                icono.sprite = iconosHelado[index];
+            }
+        }
+
+        esperandoHelado = true;
+
+        while (esperandoHelado)
+            yield return null;
+
+        Debug.Log($"{name} recibió el pedido. Comiendo...");
+        yield return new WaitForSeconds(4f);
+
+        animator.SetBool("sitting", false);
+        yield return new WaitForSeconds(1f);
+
+        if (sitPointMarker != null)
+            sitPointMarker.MarcarOcupado(false);
+
+        mesaTransform = null;
+        mesaDestino = Vector3.zero;
+        targetSitPoint = null;
+        sitPointMarker = null;
+        isSitting = false;
+        snapDistance = -1f;
+
+        if (puntoSalida != null)
+        {
+            agent.SetDestination(puntoSalida.position);
+            agent.isStopped = false;
+            Debug.Log($"{name} caminando a salida '{puntoSalida.name}'");
+        }
+        else
+        {
+            Debug.LogWarning($"{name}: puntoSalida no asignado.");
+        }
+
+        while (puntoSalida != null && Vector3.Distance(transform.position, puntoSalida.position) > 1f)
+            yield return null;
+
+        Destroy(gameObject);
+    }
+
+    public void RecibirHelado(SaborHelado saborEntregado)
+    {
+        if (!esperandoHelado) return;
+
+        if (saborEntregado == saborDeseado)
+        {
+            Debug.Log($"{name} recibió el sabor correcto: {saborEntregado}");
+            esperandoHelado = false;
+            recibioOrden = true;
+
+            if (pedidoBubble != null)
+                pedidoBubble.SetActive(false);
+        }
+        else
+        {
+            Debug.Log($"{name} rechazó el sabor {saborEntregado}, esperaba {saborDeseado}");
+        }
+    }
+
+    //SaborHelado ObtenerSaborPorIndex(int index)
+    //{
+    //    switch (index)
+    //    {
+    //        case 0: return SaborHelado.Fresa;
+    //        case 1: return SaborHelado.Chocolate;
+    //        case 2: return SaborHelado.Vainilla;
+    //        default: return SaborHelado.Chocolate;
+    //    }
+    //}
+
 }
