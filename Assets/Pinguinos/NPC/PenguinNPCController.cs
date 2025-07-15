@@ -4,11 +4,18 @@ using System.Collections;
 
 public class PenguinNPCController : MonoBehaviour
 {
-    public GameObject selectorCircle;
     private NavMeshAgent agent;
     private Animator animator;
+    private AudioSource audioSource;
 
-    [Header("Flujo del cliente")]
+    [Header("Visual y Audio")]
+    public GameObject selectorCircle;
+    public GameObject bienParticleSys;
+    public GameObject malParticleSys;
+    public AudioClip sonidoCorrecto;
+    public AudioClip sonidoIncorrecto;
+
+    [Header("Lógica")]
     private Transform targetSitPoint;
     private SitPointMarker sitPointMarker;
     private bool isSitting = false;
@@ -16,7 +23,6 @@ public class PenguinNPCController : MonoBehaviour
     private bool permitirSeleccion = true;
     public Transform puntoSalida;
 
-    [Header("Detección de mesas")]
     private Vector3 mesaDestino;
     private Transform mesaTransform;
     public float distanciaAutoAsignacion = 2f;
@@ -30,16 +36,13 @@ public class PenguinNPCController : MonoBehaviour
     private bool recibioOrden = false;
     public bool EsperaOrden() => isSitting && !recibioOrden;
 
-
-
-
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        audioSource = gameObject.AddComponent<AudioSource>();
         animator = GetComponentInChildren<Animator>();
         SetSelected(false);
     }
-
     void Update()
     {
         if (isSitting) return;
@@ -62,15 +65,6 @@ public class PenguinNPCController : MonoBehaviour
         {
             AsignarSitPointCercano();
         }
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.green;
-        if (targetSitPoint != null)
-            Gizmos.DrawLine(transform.position, targetSitPoint.position);
-        else if (mesaTransform != null)
-            Gizmos.DrawLine(transform.position, mesaDestino);
     }
 
     IEnumerator SnapToSitPoint()
@@ -122,13 +116,13 @@ public class PenguinNPCController : MonoBehaviour
         var marker = sitPoint.GetComponent<SitPointMarker>();
         if (marker == null)
         {
-            Debug.LogWarning("NO TIENE marker");
+            Debug.LogWarning("No tiene marker");
             return false;
         }
 
         if (!marker.EstaDisponible())
         {
-            Debug.LogWarning("YA OCUPADO");
+            Debug.LogWarning("Está ocupado");
             return false;
         }
 
@@ -140,7 +134,7 @@ public class PenguinNPCController : MonoBehaviour
 
         if (!resultado)
         {
-            Debug.LogWarning("NO PUDO CALCULAR RUTA");
+            Debug.LogWarning("No pudo calcular ruta");
             return false;
         }
 
@@ -195,7 +189,6 @@ public class PenguinNPCController : MonoBehaviour
             Debug.LogWarning($"{name}: No se pudo calcular ruta hacia la mesa '{mesa.name}'.");
     }
 
-    // SECCIÓN FLUJO CLIENTE
     IEnumerator FlujoCliente()
     {
         yield return new WaitForSeconds(Random.Range(1f, 3f));
@@ -207,7 +200,6 @@ public class PenguinNPCController : MonoBehaviour
             if (icono != null && iconosHelado.Length > 0)
             {
                 int index = Random.Range(0, iconosHelado.Length);
-                //saborDeseado = ObtenerSaborPorIndex(index);
                 saborDeseado = (SaborHelado)index;
                 icono.sprite = iconosHelado[index];
             }
@@ -263,22 +255,17 @@ public class PenguinNPCController : MonoBehaviour
 
             if (pedidoBubble != null)
                 pedidoBubble.SetActive(false);
+
+            if (bienParticleSys != null)
+                Instantiate(bienParticleSys, transform.position + Vector3.up * 1.5f, Quaternion.identity);
+            audioSource.PlayOneShot(sonidoCorrecto);
         }
         else
         {
             Debug.Log($"{name} rechazó el sabor {saborEntregado}, esperaba {saborDeseado}");
+            if (malParticleSys != null)
+                Instantiate(malParticleSys, transform.position + Vector3.up * 1.5f, Quaternion.identity);
+            audioSource.PlayOneShot(sonidoIncorrecto);
         }
     }
-
-    //SaborHelado ObtenerSaborPorIndex(int index)
-    //{
-    //    switch (index)
-    //    {
-    //        case 0: return SaborHelado.Fresa;
-    //        case 1: return SaborHelado.Chocolate;
-    //        case 2: return SaborHelado.Vainilla;
-    //        default: return SaborHelado.Chocolate;
-    //    }
-    //}
-
 }
