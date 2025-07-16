@@ -1,4 +1,5 @@
 <img width="1052" height="491" alt="Captura de pantalla 2025-07-15 235707" src="https://github.com/user-attachments/assets/9dfa7c33-3f5e-40cc-9868-74589ecffec7" />
+
 # Penguin Parlor  
 ### Proyecto Final - Desarrollo de Videojuegos
 **Penguin Parlor** es un juego donde los jugadores toman el rol de un pingüino vendedor de helados que debe atender a otros pingüinos clientes dentro de un tiempo límite.
@@ -15,9 +16,9 @@ git clone https://github.com/Tebas25/Penguin-Parlor
 
 ### 2. Abre el proyecto en Unity
 - Abre Unity Hub.
-- Haz clic en **'Add project from disk'** y selecciona la carpeta extraída
+- Haz click en **'Add project from disk'** y selecciona la carpeta extraída
 - Asegúrate de usar la misma versión de Unity usada en el desarrollo
 
 ### 3. Ejecuta el juego
 - Abre la escena llamada MainMenu en la carpeta Scenes
-- Haz clic en el botón Play dentro del editor
+- Haz click en el botón Play dentro del editor
