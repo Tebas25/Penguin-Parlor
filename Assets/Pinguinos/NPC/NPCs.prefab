@@ -149,6 +149,7 @@ MonoBehaviour:
   malParticleSys: {fileID: 3683553272940798326, guid: 40a57be5d3b0b8a41a8514c225a4fd1c, type: 3}
   sonidoCorrecto: {fileID: 8300000, guid: 97946de94027ae54c8c20f3ed4319ec9, type: 3}
   sonidoIncorrecto: {fileID: 8300000, guid: a61e6a71a5149624f9c64fd8958d0574, type: 3}
+  sonidoPago: {fileID: 8300000, guid: 5f49e220e9296f34e828ab0a767f236d, type: 3}
   snapDistance: 10
   puntoSalida: {fileID: 7543949663385338587, guid: fdc59c9d15f5b1b48972ceee75a400a5, type: 3}
   distanciaAutoAsignacion: 18

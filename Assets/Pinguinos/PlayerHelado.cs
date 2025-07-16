@@ -46,17 +46,17 @@ public class PlayerHelado : MonoBehaviour
                 {
                     if (hit.CompareTag("SaborFresa"))
                     {
-                        ServirHelado("fresa");
+                        ServirHelado("fresa", hit);
                         audioSource.PlayOneShot(sonidoHelado);
                     }
                     else if (hit.CompareTag("SaborVainilla"))
                     {
-                        ServirHelado("vainilla");
+                        ServirHelado("vainilla", hit);
                         audioSource.PlayOneShot(sonidoHelado);
                     } 
                     else if (hit.CompareTag("SaborChocolate"))
                     {
-                        ServirHelado("chocolate");
+                        ServirHelado("chocolate", hit);
                         audioSource.PlayOneShot(sonidoHelado);
                     }
                 }
@@ -101,11 +101,24 @@ public class PlayerHelado : MonoBehaviour
         Debug.Log("Cono fue recogido");
     }
 
-    void ServirHelado(string sabor)
+    void ServirHelado(string sabor, Collider hit)
     {
         if (saborActual != "") return;
 
-        saborActual = sabor;
+        //saborActual = sabor;
+        ContenedorHelado cont = hit.GetComponent<ContenedorHelado>();
+        if (cont != null && !cont.EstaVacio())
+        {
+            if (cont.UsarHelado())
+            {
+                saborActual = sabor;
+                // Aplica material como ya tienes hecho
+            }
+        }
+        else
+        {
+            Debug.Log("Contenedor vacío, no se puede servir.");
+        }
 
         Transform bola = conoActual.transform.Find("BolaHelado");
         if (bola != null)

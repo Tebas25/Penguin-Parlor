@@ -14,6 +14,7 @@ public class PenguinNPCController : MonoBehaviour
     public GameObject malParticleSys;
     public AudioClip sonidoCorrecto;
     public AudioClip sonidoIncorrecto;
+    public AudioClip sonidoPago;
 
     [Header("Lógica")]
     private Transform targetSitPoint;
@@ -22,6 +23,7 @@ public class PenguinNPCController : MonoBehaviour
     public float snapDistance = 1.5f;
     private bool permitirSeleccion = true;
     public Transform puntoSalida;
+    private int dineroNPC;
 
     private Vector3 mesaDestino;
     private Transform mesaTransform;
@@ -38,8 +40,8 @@ public class PenguinNPCController : MonoBehaviour
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
         audioSource = gameObject.AddComponent<AudioSource>();
+        agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
         SetSelected(false);
     }
@@ -240,7 +242,12 @@ public class PenguinNPCController : MonoBehaviour
         while (puntoSalida != null && Vector3.Distance(transform.position, puntoSalida.position) > 1f)
             yield return null;
 
+
+        if (sonidoPago != null)
+            audioSource.PlayOneShot(sonidoPago);
+        GameManager.Instance.AñadirDinero(dineroNPC);
         Destroy(gameObject);
+        dineroNPC = 0;
     }
 
     public void RecibirHelado(SaborHelado saborEntregado)
@@ -258,6 +265,8 @@ public class PenguinNPCController : MonoBehaviour
 
             if (bienParticleSys != null)
                 Instantiate(bienParticleSys, transform.position + Vector3.up * 1.5f, Quaternion.identity);
+            Destroy(bienParticleSys, 3f);
+            dineroNPC = 25;
             audioSource.PlayOneShot(sonidoCorrecto);
         }
         else
@@ -265,6 +274,8 @@ public class PenguinNPCController : MonoBehaviour
             Debug.Log($"{name} rechazó el sabor {saborEntregado}, esperaba {saborDeseado}");
             if (malParticleSys != null)
                 Instantiate(malParticleSys, transform.position + Vector3.up * 1.5f, Quaternion.identity);
+            Destroy(malParticleSys, 3f);
+            dineroNPC = 13;
             audioSource.PlayOneShot(sonidoIncorrecto);
         }
     }

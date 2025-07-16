@@ -4,11 +4,8 @@ using System.Collections.Generic;
 
 public class PenguinSpawner : MonoBehaviour
 {
-    [Header("Prefabs y Spawn Points")]
     public GameObject penguinPrefab;
     public Transform[] spawnPoints;
-
-    [Header("Configuración de Spawn")]
     public float spawnInterval = 5f;
     public int maxPenguins = 10;
 
