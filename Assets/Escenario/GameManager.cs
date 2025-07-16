@@ -21,7 +21,6 @@ public class GameManager : MonoBehaviour
     public AudioClip sonidoFinDia;
     public AudioSource audioSource;
     public Button botonVolverMenu;
-
     public Image imagenMensajeExito;
     public Image imagenMensajeFracaso;
 
@@ -101,12 +100,13 @@ public class GameManager : MonoBehaviour
         if (textoDineroFinal != null)
             textoDineroFinal.text = "Dinero final: $" + dinero;
 
-        var npcs = GameObject.FindObjectsOfType<PenguinNPCController>();
-        bool huboClientes = npcs.Length > 0;
+        GameObject[] npcs = GameObject.FindGameObjectsWithTag("NPC");
+        Debug.Log("NPCs encontrados al final del juego: " + npcs.Length);
+        bool hayNPCs = npcs.Length > 0;
 
         if (imagenMensajeExito != null)
-            imagenMensajeExito.gameObject.SetActive(huboClientes);
+            imagenMensajeExito.gameObject.SetActive(!hayNPCs);
         if (imagenMensajeFracaso != null)
-            imagenMensajeFracaso.gameObject.SetActive(!huboClientes);
+            imagenMensajeFracaso.gameObject.SetActive(hayNPCs);
     }
 }
